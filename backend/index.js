@@ -50,7 +50,6 @@ db.connect((err) => {
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
-        phone VARCHAR(20) NOT NULL,
         role ENUM('user', 'agent', 'admin') DEFAULT 'user',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -75,10 +74,10 @@ app.get('/test', (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
   console.log('Received registration request:', req.body);
   
-  const { name, email, password, phone } = req.body;
+  const { name, email, password } = req.body;
   
   // 驗證必填字段
-  if (!name || !email || !password || !phone) {
+  if (!name || !email || !password) {
     return res.status(400).json({ 
       success: false,
       message: '所有字段都是必填的' 
@@ -111,8 +110,7 @@ app.post('/api/auth/register', async (req, res) => {
       const user = {
         name,
         email,
-        password: hashedPassword,
-        phone
+        password: hashedPassword
       };
 
       db.query('INSERT INTO users SET ?', user, (err, result) => {
@@ -221,7 +219,7 @@ app.get('/api/auth/me', async (req, res) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-jwt-secret');
 
-    db.query('SELECT id, name, email, phone, role FROM users WHERE id = ?', [decoded.id], (err, results) => {
+    db.query('SELECT id, name, email, role FROM users WHERE id = ?', [decoded.id], (err, results) => {
       if (err) {
         console.error('Database error:', err);
         return res.status(500).json({ 

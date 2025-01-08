@@ -9,16 +9,30 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(5px);
+  padding: 1rem;
 }
 
 .modal-content {
-  background-color: white;
+  background: white;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   width: 100%;
   max-width: 400px;
   position: relative;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.3s ease-out;
+  overflow-y: auto;
+  max-height: calc(100vh - 2rem);
+  box-sizing: border-box;
+}
+
+.modal-content h2 {
+  margin: 0 0 1.5rem;
+  color: #2c3e50;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .close-button {
@@ -28,98 +42,173 @@
   background: none;
   border: none;
   font-size: 1.5rem;
+  color: #95a5a6;
   cursor: pointer;
-  color: #666;
-  padding: 0;
-  width: 30px;
-  height: 30px;
+  padding: 0.5rem;
+  transition: color 0.2s;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
 }
 
 .close-button:hover {
-  background-color: #f5f5f5;
-  color: #333;
-}
-
-.modal-content h2 {
-  margin: 0 0 1.5rem 0;
-  color: var(--text-color);
-  text-align: center;
+  color: #e74c3c;
+  background-color: #f8f9fa;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: var(--text-color);
+  color: #34495e;
   font-weight: 500;
+  font-size: 0.95rem;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.8rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--primary-color);
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  background-color: white;
+}
+
+.error-message {
+  background-color: #fff3f3;
+  color: #e74c3c;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  border: 1px solid #ffd1d1;
+  display: flex;
+  align-items: center;
+}
+
+.error-message::before {
+  content: "⚠️";
+  margin-right: 0.5rem;
 }
 
 .submit-button {
   width: 100%;
   padding: 0.8rem;
-  background-color: var(--primary-color);
+  background-color: #3498db;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.1s;
   margin-top: 1rem;
 }
 
 .submit-button:hover {
-  background-color: #1565c0;
+  background-color: #2980b9;
 }
 
-.error-message {
-  background-color: #ffebee;
-  color: #c62828;
-  padding: 0.8rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
+.submit-button:active {
+  transform: scale(0.98);
 }
 
 .switch-text {
-  margin-top: 1rem;
   text-align: center;
-  color: #666;
+  margin-top: 1.5rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
 }
 
 .switch-button {
   background: none;
   border: none;
-  color: var(--primary-color);
+  color: #3498db;
   cursor: pointer;
-  padding: 0;
-  font-size: inherit;
+  font-weight: 600;
+  padding: 0.3rem 0.5rem;
   margin-left: 0.5rem;
+  transition: color 0.2s;
 }
 
 .switch-button:hover {
+  color: #2980b9;
   text-decoration: underline;
+}
+
+.input-icon {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-icon input {
+  padding-left: 2.5rem;
+}
+
+.input-icon svg {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #95a5a6;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* 密碼強度指示器 */
+.password-strength {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+}
+
+.strength-meter {
+  height: 4px;
+  flex-grow: 1;
+  margin-right: 0.5rem;
+  border-radius: 2px;
+  background-color: #eee;
+  overflow: hidden;
+}
+
+.strength-meter div {
+  height: 100%;
+  width: 0;
+  transition: width 0.3s, background-color 0.3s;
+}
+
+.strength-meter.weak div {
+  width: 33.33%;
+  background-color: #e74c3c;
+}
+
+.strength-meter.medium div {
+  width: 66.66%;
+  background-color: #f1c40f;
+}
+
+.strength-meter.strong div {
+  width: 100%;
+  background-color: #2ecc71;
 }
 
 /* 響應式設計 */
@@ -128,6 +217,25 @@
     margin: 1rem;
     padding: 1.5rem;
   }
+
+  .modal-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-group input {
+    padding: 0.7rem;
+  }
+}
+
+/* 動畫效果 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.error-shake {
+  animation: shake 0.4s ease-in-out;
 }
 
 /* 用戶菜單 */
