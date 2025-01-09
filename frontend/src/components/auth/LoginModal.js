@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import './Auth.css';
 
 const LoginModal = ({ onClose, onSwitchToRegister }) => {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,41 +21,31 @@ const LoginModal = ({ onClose, onSwitchToRegister }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      console.log('Sending login data:', formData);
-      
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-      console.log('Login response:', data);
-
-      if (response.ok) {
-        // 儲存 token 到 localStorage
-        localStorage.setItem('token', data.token);
-        // 關閉模態框
-        onClose();
-        // 重新整理頁面以更新用戶狀態
-        window.location.reload();
-      } else {
-        setError(data.message || '登入失敗，請檢查您的帳號密碼');
-      }
+      const { email, password } = formData;
+      await login(email, password);
+      onClose();
     } catch (err) {
       console.error('Login error:', err);
-      setError('登入時發生錯誤，請稍後再試');
+      setError(err.response?.data?.message || '登入失敗，請檢查您的帳號密碼');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="close-button" onClick={onClose}>&times;</button>
+        <button 
+          className="close-button" 
+          onClick={onClose}
+          disabled={loading}
+        >
+          &times;
+        </button>
         <h2>登入</h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
@@ -65,6 +58,8 @@ const LoginModal = ({ onClose, onSwitchToRegister }) => {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={loading}
+              autoComplete="email"
             />
           </div>
           <div className="form-group">
@@ -76,13 +71,25 @@ const LoginModal = ({ onClose, onSwitchToRegister }) => {
               value={formData.password}
               onChange={handleChange}
               required
+              disabled={loading}
+              autoComplete="current-password"
             />
           </div>
-          <button type="submit" className="submit-button">登入</button>
+          <button 
+            type="submit" 
+            className="submit-button"
+            disabled={loading}
+          >
+            {loading ? '登入中...' : '登入'}
+          </button>
         </form>
         <p className="switch-text">
           還沒有帳號？
-          <button className="switch-button" onClick={onSwitchToRegister}>
+          <button 
+            className="switch-button" 
+            onClick={onSwitchToRegister}
+            disabled={loading}
+          >
             立即註冊
           </button>
         </p>

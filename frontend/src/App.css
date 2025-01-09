@@ -1,56 +1,74 @@
-/* 全局樣式 */
+/* 現代專業房地產平台配色方案 */
 :root {
-  --primary-color: #1976d2;
-  --secondary-color: #dc004e;
-  --background-color: #f5f5f5;
-  --text-color: #333;
-  --border-color: #ddd;
+  /* 主色調 */
+  --primary-color: #2C6FB3;      /* 深藍色 - 專業可靠 */
+  --secondary-color: #4CAF50;    /* 綠色 - 生機活力 */
+  --accent-color: #FF6B6B;       /* 珊瑚紅 - 重點突出 */
+  --background-color: #F8FAFC;   /* 淺灰藍 - 清新舒適 */
+  --text-color: #2C3E50;         /* 深灰藍 - 易讀性強 */
+  --border-color: #E2E8F0;       /* 柔和灰藍 - 分隔線條 */
+  --white: #FFFFFF;              /* 純白 - 清爽明亮 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* 全局樣式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
 }
 
-.App {
+.container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 1rem;
 }
 
 /* 導航欄 */
 .navbar {
-  background-color: white;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 2rem;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
   z-index: 1000;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  height: 70px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  display: flex;
   align-items: center;
 }
 
 .logo h1 {
-  margin: 0;
   color: var(--primary-color);
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0;
 }
 
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 2rem;
 }
 
@@ -58,266 +76,233 @@ body {
   color: var(--text-color);
   text-decoration: none;
   font-weight: 500;
+  font-size: 1rem;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .nav-link:hover {
   color: var(--primary-color);
-  background-color: #f5f5f5;
+  background-color: rgba(44, 111, 179, 0.1);
 }
 
 /* 搜索區域 */
 .search-section {
   background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 2rem;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .search-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  width: 100%;
 }
 
-/* 房產列表 */
-.property-grid {
+.search-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.search-group {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+}
+
+.search-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 14px;
+  height: 40px;
+}
+
+.search-button {
+  padding: 0 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 40px;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+.search-button i {
+  margin-right: 8px;
+}
+
+/* 房產列表區域 */
+.properties-section {
+  margin-top: 20px;
+}
+
+.properties-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
 }
 
 .property-card {
-  background-color: white;
+  background: white;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
 }
 
 .property-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .property-image {
+  position: relative;
+  padding-top: 66.67%; /* 3:2 比例 */
+}
+
+.property-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
 }
 
 .property-info {
-  padding: 1rem;
+  padding: 15px;
 }
 
 .property-info h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
-  color: var(--text-color);
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  color: #333;
 }
 
-.property-price {
-  color: var(--primary-color);
-  font-size: 1.5rem;
+.property-info .price {
+  font-size: 20px;
   font-weight: bold;
-  margin: 0.5rem 0;
+  color: #007bff;
+  margin: 0 0 10px 0;
 }
 
-.property-address {
-  color: var(--text-color);
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+.property-info .address {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 10px 0;
 }
 
 .property-details {
   display: flex;
-  justify-content: space-between;
+  gap: 15px;
   color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  font-size: 14px;
 }
 
-/* 表單元素 */
-input, select {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  font-size: 1rem;
-  background-color: white;
-  transition: border-color 0.2s;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-select:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-}
-
-button {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-
-button:hover {
-  background-color: #1565c0;
-  transform: translateY(-1px);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-/* 標籤 */
-.tag {
-  background-color: #e3f2fd;
-  color: var(--primary-color);
-  padding: 0.3rem 0.8rem;
-  border-radius: 16px;
-  font-size: 0.9rem;
-  margin-right: 0.5rem;
-  display: inline-block;
-}
-
-/* 錯誤消息 */
-.error-message {
-  background-color: #ffebee;
-  color: #c62828;
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-/* 加載動畫 */
+/* 加載和錯誤狀態 */
 .loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  color: #dc3545;
+  font-size: 16px;
+}
+
+/* 加載指示器容器 */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 200px;
-  color: var(--primary-color);
-  font-size: 1.2rem;
+  background-color: #f8f9fa;
+  z-index: 9999;
+}
+
+/* 加載指示器動畫 */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .App {
-    padding: 10px;
-  }
-  
-  .navbar-container {
+  .search-row {
     flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
   }
-  
-  .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
+
+  .search-group {
+    width: 100%;
   }
-  
-  .search-form {
+
+  .search-button {
+    width: 100%;
+    margin-top: 15px;
+  }
+
+  .properties-grid {
     grid-template-columns: 1fr;
-  }
-  
-  .property-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .property-card {
-    margin-bottom: 1rem;
   }
 }
 
-/* 原始樣式 */
-.App-header {
-  background-color: #282c34;
+/* App 容器 */
+.app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-h1 {
-  margin-bottom: 20px;
-  color: #61dafb;
-}
-
-p {
-  margin: 0;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f4f4f4;
-}
-
-tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-tr:hover {
-  background-color: #f5f5f5;
-}
-
-input {
-  padding: 8px;
-  margin: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  min-width: 200px;
-}
-
-button {
-  padding: 8px 15px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin: 0 5px;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-button[type="submit"] {
-  background-color: #008CBA;
-}
-
-button[type="submit"]:hover {
-  background-color: #007399;
+/* 主要內容區域 */
+.main-content {
+  flex: 1;
+  padding: 40px;
+  background-color: #f8f9fa;
 }

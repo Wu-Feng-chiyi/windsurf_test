@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import LoginModal from './components/auth/LoginModal';
 import RegisterModal from './components/auth/RegisterModal';
-
-const API_BASE_URL = '/api';
+import { useAuth } from './contexts/AuthContext';
+import Header from './components/layout/Header';
+import Banner from './components/layout/Banner';
 
 // 台灣縣市資料
 const TAIWAN_CITIES = [
@@ -67,15 +68,16 @@ const PRICE_RANGES = {
 };
 
 function App() {
+  const { user, logout, initialized } = useAuth();
   const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useState({
     type: 'all',
     city: '',
     district: '',
     priceRange: 'all',
-    purpose: 'all', // 'sale' or 'rent'
+    purpose: 'all',
     area: 'all',
     rooms: 'all'
   });
@@ -83,48 +85,7 @@ function App() {
   // 認證相關狀態
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
-
-  // 檢查用戶登入狀態
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetchUserInfo(token);
-    }
-  }, []);
-
-  // 獲取用戶信息
-  const fetchUserInfo = async (token) => {
-    try {
-      const response = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUserInfo(data);
-        setIsLoggedIn(true);
-      } else {
-        // Token 無效，清除本地存儲
-        localStorage.removeItem('token');
-        setIsLoggedIn(false);
-        setUserInfo(null);
-      }
-    } catch (error) {
-      console.error('Error fetching user info:', error);
-    }
-  };
-
-  // 處理登出
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    setUserInfo(null);
-    setShowUserMenu(false);
-  };
 
   // 根據選擇的城市獲取區域列表
   const getDistricts = () => {
@@ -157,13 +118,19 @@ function App() {
       bathrooms: 1,
       purpose: 'rent',
       image: 'https://via.placeholder.com/300x200'
-    },
-    // 更多模擬數據...
+    }
   ];
 
-  useEffect(() => {
+  React.useEffect(() => {
     // 暫時使用模擬數據
-    setProperties(mockProperties);
+    try {
+      setLoading(true);
+      setProperties(mockProperties);
+      setLoading(false);
+    } catch (err) {
+      setError('無法載入房產資料');
+      setLoading(false);
+    }
   }, []);
 
   const formatPrice = (price, purpose) => {
@@ -179,56 +146,139 @@ function App() {
     console.log('Search params:', searchParams);
   };
 
-  return (
-    <div>
-      {/* 導航欄 */}
-      <nav className="navbar">
-        <div className="navbar-container">
-          <div className="logo">
-            <h1>房市集</h1>
-          </div>
-          <div className="nav-links">
-            <a href="#" className="nav-link">買房</a>
-            <a href="#" className="nav-link">租房</a>
-            <a href="#" className="nav-link">實價登錄</a>
-            <a href="#" className="nav-link">新聞資訊</a>
-            {isLoggedIn ? (
-              <div className="user-menu">
-                <button 
-                  className="user-menu-button"
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                >
-                  {userInfo?.name || '用戶'}
-                </button>
-                {showUserMenu && (
-                  <div className="user-menu-content">
-                    <a href="#" className="user-menu-item">我的收藏</a>
-                    <a href="#" className="user-menu-item">個人設定</a>
-                    <a href="#" className="user-menu-item" onClick={handleLogout}>登出</a>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="auth-buttons">
-                <button 
-                  className="auth-button login-button"
-                  onClick={() => setShowLoginModal(true)}
-                >
-                  登入
-                </button>
-                <button 
-                  className="auth-button register-button"
-                  onClick={() => setShowRegisterModal(true)}
-                >
-                  註冊
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
+  const handleLogout = () => {
+    logout();
+    setShowUserMenu(false);
+  };
 
-      {/* 登入和註冊模態框 */}
+  // 如果認證狀態還未初始化完成，返回 null 或顯示加載指示器
+  if (!initialized) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app">
+      <Header
+        isLoggedIn={!!user}
+        userInfo={user}
+        showUserMenu={showUserMenu}
+        setShowUserMenu={setShowUserMenu}
+        setShowLoginModal={setShowLoginModal}
+        setShowRegisterModal={setShowRegisterModal}
+        handleLogout={() => {
+          logout();
+          setShowUserMenu(false);
+        }}
+      />
+
+      <main className="main-content">
+        {/* 添加 Banner 組件 */}
+        <Banner />
+
+        {/* 搜索區域 */}
+        <section className="search-section">
+          <form className="search-form" onSubmit={handleSearch}>
+            <div className="search-row">
+              <div className="search-group">
+                <label>類型</label>
+                <select
+                  value={searchParams.type}
+                  onChange={(e) => setSearchParams({ ...searchParams, type: e.target.value })}
+                >
+                  <option value="all">所有類型</option>
+                  {HOUSE_TYPES.map(type => (
+                    <option key={type.value} value={type.value}>{type.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="search-group">
+                <label>城市</label>
+                <select
+                  value={searchParams.city}
+                  onChange={(e) => setSearchParams({ 
+                    ...searchParams, 
+                    city: e.target.value,
+                    district: '' // 重置區域
+                  })}
+                >
+                  <option value="">選擇城市</option>
+                  {TAIWAN_CITIES.map(city => (
+                    <option key={city.city} value={city.city}>{city.city}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="search-group">
+                <label>區域</label>
+                <select
+                  value={searchParams.district}
+                  onChange={(e) => setSearchParams({ ...searchParams, district: e.target.value })}
+                  disabled={!searchParams.city}
+                >
+                  <option value="">選擇區域</option>
+                  {getDistricts().map(district => (
+                    <option key={district} value={district}>{district}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="search-group">
+                <label>價格範圍</label>
+                <select
+                  value={searchParams.priceRange}
+                  onChange={(e) => setSearchParams({ ...searchParams, priceRange: e.target.value })}
+                >
+                  <option value="all">所有價格</option>
+                  {PRICE_RANGES[searchParams.purpose === 'rent' ? 'rent' : 'sale'].map(range => (
+                    <option key={range.value} value={range.value}>{range.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <button type="submit" className="search-button">
+                <i className="fas fa-search"></i>
+                搜尋
+              </button>
+            </div>
+          </form>
+        </section>
+
+        {/* 房產列表 */}
+        <section className="properties-section">
+          {loading ? (
+            <div className="loading">載入中...</div>
+          ) : error ? (
+            <div className="error">{error}</div>
+          ) : (
+            <div className="properties-grid">
+              {properties.map(property => (
+                <div key={property.id} className="property-card">
+                  <div className="property-image">
+                    <img src={property.image} alt={property.title} />
+                  </div>
+                  <div className="property-info">
+                    <h3>{property.title}</h3>
+                    <p className="price">{formatPrice(property.price, property.purpose)}</p>
+                    <p className="address">{property.address}</p>
+                    <div className="property-details">
+                      <span>{property.area} 坪</span>
+                      <span>{property.rooms} 房</span>
+                      <span>{property.bathrooms} 衛</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* 登入和註冊彈窗 */}
       {showLoginModal && (
         <LoginModal
           onClose={() => setShowLoginModal(false)}
@@ -238,6 +288,7 @@ function App() {
           }}
         />
       )}
+
       {showRegisterModal && (
         <RegisterModal
           onClose={() => setShowRegisterModal(false)}
@@ -247,118 +298,6 @@ function App() {
           }}
         />
       )}
-
-      <div className="App">
-        {/* 搜索區域 */}
-        <section className="search-section">
-          <form className="search-form" onSubmit={handleSearch}>
-            <select
-              value={searchParams.purpose}
-              onChange={(e) => setSearchParams({...searchParams, purpose: e.target.value})}
-            >
-              <option value="all">買賣 & 出租</option>
-              <option value="sale">買賣</option>
-              <option value="rent">出租</option>
-            </select>
-
-            <select
-              value={searchParams.type}
-              onChange={(e) => setSearchParams({...searchParams, type: e.target.value})}
-            >
-              <option value="all">物件類型</option>
-              {HOUSE_TYPES.map(type => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={searchParams.city}
-              onChange={(e) => setSearchParams({...searchParams, city: e.target.value, district: ''})}
-            >
-              <option value="">選擇縣市</option>
-              {TAIWAN_CITIES.map(city => (
-                <option key={city.city} value={city.city}>
-                  {city.city}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={searchParams.district}
-              onChange={(e) => setSearchParams({...searchParams, district: e.target.value})}
-              disabled={!searchParams.city}
-            >
-              <option value="">選擇區域</option>
-              {getDistricts().map(district => (
-                <option key={district} value={district}>
-                  {district}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={searchParams.priceRange}
-              onChange={(e) => setSearchParams({...searchParams, priceRange: e.target.value})}
-            >
-              <option value="all">價格範圍</option>
-              {PRICE_RANGES[searchParams.purpose === 'rent' ? 'rent' : 'sale'].map(range => (
-                <option key={range.value} value={range.value}>
-                  {range.label}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={searchParams.rooms}
-              onChange={(e) => setSearchParams({...searchParams, rooms: e.target.value})}
-            >
-              <option value="all">房數</option>
-              <option value="1">1房</option>
-              <option value="2">2房</option>
-              <option value="3">3房</option>
-              <option value="4">4房</option>
-              <option value="5">5房以上</option>
-            </select>
-
-            <button type="submit">搜尋</button>
-          </form>
-        </section>
-
-        {/* 錯誤消息 */}
-        {error && <div className="error-message">{error}</div>}
-
-        {/* 加載動畫 */}
-        {loading && <div className="loading">加載中...</div>}
-
-        {/* 房產列表 */}
-        <div className="property-grid">
-          {properties.map(property => (
-            <div key={property.id} className="property-card">
-              <img src={property.image} alt={property.title} className="property-image" />
-              <div className="property-info">
-                <h3>{property.title}</h3>
-                <div className="property-price">
-                  {formatPrice(property.price, property.purpose)}
-                </div>
-                <div className="property-address">{property.address}</div>
-                <div className="property-details">
-                  <span>{property.area} 坪</span>
-                  <span>{property.rooms} 房</span>
-                  <span>{property.bathrooms} 衛</span>
-                </div>
-                <div style={{ marginTop: '1rem' }}>
-                  <span className="tag">{property.type}</span>
-                  <span className="tag">
-                    {property.purpose === 'sale' ? '售屋' : '租屋'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

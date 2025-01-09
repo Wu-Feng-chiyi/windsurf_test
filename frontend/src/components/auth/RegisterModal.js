@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import './Auth.css';
 
 const RegisterModal = ({ onClose, onSwitchToLogin }) => {
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -9,6 +11,7 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState('');
   const [shake, setShake] = useState(false);
 
@@ -46,129 +49,149 @@ const RegisterModal = ({ onClose, onSwitchToLogin }) => {
     setTimeout(() => setShake(false), 500);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      showError('請輸入姓名');
+      return false;
+    }
+
+    if (!formData.email.trim()) {
+      showError('請輸入電子郵件');
+      return false;
+    }
+
+    if (!formData.password) {
+      showError('請輸入密碼');
+      return false;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       showError('密碼不一致');
-      return;
+      return false;
     }
 
     if (passwordStrength === 'weak') {
       showError('密碼強度太弱，請使用更複雜的密碼');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
       return;
     }
 
+    setLoading(true);
     try {
       const { confirmPassword, ...registerData } = formData;
-      
-      console.log('Sending registration request...');
-
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registerData),
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        onSwitchToLogin();
-      } else {
-        showError(data.message || '註冊失敗，請稍後再試');
-      }
+      await register(registerData);
+      onClose();
     } catch (err) {
       console.error('Registration error:', err);
-      showError('註冊時發生錯誤，請稍後再試');
+      showError(err.response?.data?.message || '註冊失敗，請稍後再試');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getPasswordStrengthColor = () => {
+    switch (passwordStrength) {
+      case 'weak': return '#ff4d4d';
+      case 'medium': return '#ffd700';
+      case 'strong': return '#00cc00';
+      default: return '#ccc';
     }
   };
 
   return (
     <div className="modal-overlay">
       <div className={`modal-content ${shake ? 'error-shake' : ''}`}>
-        <button className="close-button" onClick={onClose}>&times;</button>
+        <button 
+          className="close-button" 
+          onClick={onClose}
+          disabled={loading}
+        >
+          &times;
+        </button>
         <h2>註冊新帳號</h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="name">姓名</label>
-            <div className="input-icon">
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="請輸入您的姓名"
-                required
-              />
-            </div>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              autoComplete="name"
+            />
           </div>
           <div className="form-group">
             <label htmlFor="email">電子郵件</label>
-            <div className="input-icon">
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="example@email.com"
-                required
-              />
-            </div>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              autoComplete="email"
+            />
           </div>
           <div className="form-group">
             <label htmlFor="password">密碼</label>
-            <div className="input-icon">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="至少 8 個字符"
-                required
-                minLength="8"
-              />
-            </div>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              autoComplete="new-password"
+            />
             {formData.password && (
-              <div className="password-strength">
-                <div className={`strength-meter ${passwordStrength}`}>
-                  <div></div>
-                </div>
-                <span>{passwordStrength && `密碼強度: ${
-                  passwordStrength === 'weak' ? '弱' :
-                  passwordStrength === 'medium' ? '中' : '強'
-                }`}</span>
+              <div className="password-strength" style={{ color: getPasswordStrengthColor() }}>
+                密碼強度：{passwordStrength === 'weak' ? '弱' : passwordStrength === 'medium' ? '中' : '強'}
               </div>
             )}
           </div>
           <div className="form-group">
             <label htmlFor="confirmPassword">確認密碼</label>
-            <div className="input-icon">
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="再次輸入密碼"
-                required
-                minLength="8"
-              />
-            </div>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              autoComplete="new-password"
+            />
           </div>
-          <button type="submit" className="submit-button">
-            註冊
+          <button 
+            type="submit" 
+            className="submit-button"
+            disabled={loading}
+          >
+            {loading ? '註冊中...' : '註冊'}
           </button>
         </form>
         <p className="switch-text">
           已經有帳號？
-          <button className="switch-button" onClick={onSwitchToLogin}>
+          <button 
+            className="switch-button" 
+            onClick={onSwitchToLogin}
+            disabled={loading}
+          >
             立即登入
           </button>
         </p>
