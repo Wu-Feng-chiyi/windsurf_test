@@ -169,14 +169,10 @@ function App() {
         setShowUserMenu={setShowUserMenu}
         setShowLoginModal={setShowLoginModal}
         setShowRegisterModal={setShowRegisterModal}
-        handleLogout={() => {
-          logout();
-          setShowUserMenu(false);
-        }}
+        handleLogout={handleLogout}
       />
 
       <main className="main-content">
-        {/* 添加 Banner 組件 */}
         <Banner />
 
         {/* 搜索區域 */}

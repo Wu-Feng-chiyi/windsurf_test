@@ -7,7 +7,7 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  height: 72px; /* 略微增加高度 */
+  height: 72px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
 }
@@ -19,7 +19,7 @@
 .header-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 24px; /* 增加側邊距 */
+  padding: 0 24px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@
 .header-left {
   display: flex;
   align-items: center;
-  margin-right: 32px; /* 增加右側間距 */
+  margin-right: 32px;
 }
 
 .logo {
@@ -56,9 +56,9 @@
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 24px; /* 增加導航項目間距 */
+  gap: 24px;
   flex-grow: 1;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .nav-group {
@@ -67,12 +67,17 @@
   gap: 16px;
 }
 
+.main-nav {
+  flex-grow: 1;
+  justify-content: center;
+}
+
 .nav-link {
   text-decoration: none;
   color: #2c3e50;
   font-weight: 500;
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: 8px;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -80,66 +85,263 @@
   position: relative;
 }
 
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background-color: #3498db;
-  transition: all 0.3s ease;
-}
-
 .nav-link:hover {
-  background-color: rgba(52, 152, 219, 0.05);
+  background-color: rgba(52, 152, 219, 0.1);
   color: #3498db;
-}
-
-.nav-link:hover::after {
-  left: 10%;
-  width: 80%;
 }
 
 .nav-link i {
-  margin-right: 6px;
-  color: #3498db;
-  opacity: 0.8;
+  font-size: 16px;
 }
 
-.auth-nav {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+/* 統一下拉選單樣式 */
+.user-menu {
+  position: relative;
+  margin-left: 8px;
 }
 
-.user-menu-button, .auth-button {
-  background: none;
+.user-menu-button {
+  background: transparent;
   border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
-  padding: 10px 14px;
-  border-radius: 10px;
+  color: #2c3e50;
   transition: all 0.3s ease;
 }
 
-.user-menu-button:hover, .auth-button:hover {
-  background-color: rgba(52, 152, 219, 0.05);
+.user-menu-button:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+}
+
+.user-menu-button i {
+  font-size: 18px;
 }
 
 .user-menu-dropdown {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   right: 0;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  min-width: 220px;
-  padding: 12px;
-  z-index: 1100;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 180px;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.user-menu-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  right: 0;
+  width: 100%;
+  height: 16px;
+  background: transparent;
+}
+
+.user-menu-dropdown::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 20px;
+  width: 12px;
+  height: 12px;
+  background: white;
+  transform: rotate(45deg);
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.user-menu-dropdown .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  color: #2c3e50;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.user-menu-dropdown .menu-item:hover {
+  background-color: #f8f9fa;
+  color: #3498db;
+}
+
+.user-menu-dropdown .menu-item i {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.user-menu-dropdown .menu-item.logout {
+  color: #e74c3c;
+}
+
+.user-menu-dropdown .menu-item.logout:hover {
+  background-color: #fef2f2;
+  color: #c0392b;
+}
+
+/* 認證按鈕 */
+.auth-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  border: none;
+}
+
+.auth-button.login {
+  background-color: transparent;
+  color: #2c3e50;
+}
+
+.auth-button.login:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+}
+
+.auth-button.register {
+  background-color: #3498db;
+  color: white;
+}
+
+.auth-button.register:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.auth-button i {
+  font-size: 16px;
+}
+
+/* 我要刊登按鈕和下拉菜單 */
+.post-menu {
+  position: relative;
+  margin-right: 16px;
+}
+
+.post-menu::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.post-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.post-button:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.post-button i {
+  font-size: 16px;
+}
+
+.post-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 160px;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.post-menu-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 0;
+  width: 100%;
+  height: 16px;
+  background: transparent;
+}
+
+.post-menu-dropdown::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background: white;
+  transform: rotate(45deg);
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.post-menu-dropdown .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  color: #2c3e50;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.post-menu-dropdown .menu-item:hover {
+  background-color: #f8f9fa;
+  color: #3498db;
+}
+
+.post-menu-dropdown .menu-item i {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 響應式設計 */
@@ -148,36 +350,98 @@
     padding: 0 16px;
   }
 
-  .header-nav {
-    gap: 16px;
+  .nav-link {
+    padding: 8px 12px;
   }
 }
 
 @media (max-width: 992px) {
-  .header {
-    height: 64px;
+  .nav-link span {
+    display: none;
   }
 
+  .nav-link i {
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
   .header-nav {
-    display: none; /* 移動端隱藏 */
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-nav.mobile-menu-open {
+    display: flex;
+  }
+
+  .nav-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .nav-link {
+    justify-content: flex-start;
+  }
+
+  .nav-link span {
+    display: inline;
   }
 
   .mobile-menu-toggle {
     display: block;
   }
+
+  .post-menu {
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .post-button {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .post-menu-dropdown {
+    position: static;
+    box-shadow: none;
+    margin-top: 0;
+    animation: none;
+  }
+
+  .post-menu-dropdown::before,
+  .post-menu-dropdown::after {
+    display: none;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .auth-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
-/* 移動端菜單切換按鈕 */
+/* 移動端菜單按鈕 */
 .mobile-menu-toggle {
   display: none;
   background: none;
   border: none;
   font-size: 24px;
-  cursor: pointer;
   color: #2c3e50;
-  transition: color 0.3s ease;
-}
-
-.mobile-menu-toggle:hover {
-  color: #3498db;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 16px;
 }

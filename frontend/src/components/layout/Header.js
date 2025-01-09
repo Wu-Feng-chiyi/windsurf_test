@@ -12,6 +12,7 @@ const Header = ({
   handleLogout 
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showPostMenu, setShowPostMenu] = useState(false);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -60,6 +61,29 @@ const Header = ({
           </div>
 
           <div className="nav-group auth-nav">
+            <div 
+              className="post-menu"
+              onMouseEnter={() => setShowPostMenu(true)}
+              onMouseLeave={() => setShowPostMenu(false)}
+            >
+              <button className="post-button">
+                <i className="fas fa-plus-circle"></i>
+                <span>我要刊登</span>
+              </button>
+              {showPostMenu && (
+                <div className="post-menu-dropdown">
+                  <Link to="/post/sell" className="menu-item">
+                    <i className="fas fa-home"></i>
+                    我要賣房
+                  </Link>
+                  <Link to="/post/rent" className="menu-item">
+                    <i className="fas fa-key"></i>
+                    我要出租
+                  </Link>
+                </div>
+              )}
+            </div>
+
             {isLoggedIn ? (
               <div className="user-menu">
                 <button 
